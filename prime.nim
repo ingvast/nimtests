@@ -3,7 +3,7 @@ let doc = """
 Calculate all the prime numbers smaller than largest_num.
 
 Usage:
-  prime <largest_num>
+  prime <primeN>
   prime (-h | --help) 
 
 Options:
@@ -22,24 +22,24 @@ proc `$`( t : seq[ bool ] ) : string =
     result.add( (if val : "T" else: "F") & " " )
   result.add "]"
 
-proc calculateLastPrime( largest_num : int ) : int =
+proc calculatePrimeN( ct_prime : int ) : int =
 
-  var numbers  =  newSeq[ bool ]( largest_num + 1)
+  var numbers  =  newSeq[ bool ]( int( ln(float(ct_prime)) * ct_prime.float * 1.2 ) )
 
   proc unsetPrimes( n : int) =
-    for i in countup( n*2, largest_num, n ):
+    for i in countup( n*n, numbers.len - 1, n * 2 ):
       numbers[i] = false
 
   proc findNextPrime( n: int ): int =
     var n = n
-    while n < largest_num:
+    while n < numbers.len:
       if numbers[n]:
         return n
       n = n + 1
     return 0
 
 
-  for i in 0..largest_num:
+  for i in 0..<numbers.len:
     numbers[i] = true
 
   var
@@ -47,29 +47,21 @@ proc calculateLastPrime( largest_num : int ) : int =
     old : int
     n_prime : int = 2
 
-
-
-  while i <= largest_num:
+  while n_prime <= ct_prime:
     old  = i
     i = findNextPrime( i + 1 )
+    #echo n_prime, " ", i
     if 0 == i :
       break
-    #echo  n_prime, ", ", i, ", ", float(i) / ( float( n_prime) * math.ln(float( n_prime ) ) )
     n_prime = n_prime + 1
     unsetPrimes(i)
-  echo "Last one ", old
-  echo  n_prime, ", ", old, ", ", float(old) / ( float( n_prime) * math.ln(float( n_prime ) ) )
-  return old
+  #echo "Last one ", old
+  #echo  n_prime, ", ", old, ", ", float(old) / ( float( n_prime) * math.ln(float( n_prime ) ) )
+  return i
 
 let args = docopt( doc, version = "0.0.0.0.1" )
 
-#const largest_num : int = parseInt( "234" )
-let largest_num = parseInt( $args["<largest_num>"] )
+let primeN = parseInt( $args["<primeN>"] )
 
-echo largest_num
-
-const prime = calculateLastPrime( 100000 )
-echo "The 10:th prime is ", prime
-
-echo calculateLastPrime( largest_num )
+echo primeN, "\t", calculatePrimeN( primeN )
 
