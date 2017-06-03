@@ -68,5 +68,8 @@ let largest_num = parseInt( $args["<largest_num>"] )
 
 echo largest_num
 
+const prime = calculateLastPrime( 100000 )
+echo "The 10:th prime is ", prime
+
 echo calculateLastPrime( largest_num )
 
