@@ -25,8 +25,10 @@ proc `$`( t : seq[ bool ] ) : string =
 proc calculatePrimeN( ct_prime : int ) : int =
 
   var numbers  =  newSeq[ bool ]( int( ln(float(ct_prime)) * ct_prime.float * 1.2 ) )
-
+  
   proc unsetPrimes( n : int) =
+    #if n mod 2 == 0:
+      #raise newException( IndexError, "Called unset primes with even number")
     for i in countup( n*n, numbers.len - 1, n * 2 ):
       numbers[i] = false
 
@@ -38,25 +40,21 @@ proc calculatePrimeN( ct_prime : int ) : int =
       n = n + 1
     return 0
 
-
-  for i in 0..<numbers.len:
-    numbers[i] = true
+  for i in countup(0,numbers.len - 2, 2):
+    numbers[i] = false
+    numbers[i+1] = true
 
   var
     i : int = 1
     old : int
-    n_prime : int = 2
+    n_prime : int = 3
 
   while n_prime <= ct_prime:
     old  = i
     i = findNextPrime( i + 1 )
     #echo n_prime, " ", i
-    if 0 == i :
-      break
     n_prime = n_prime + 1
     unsetPrimes(i)
-  #echo "Last one ", old
-  #echo  n_prime, ", ", old, ", ", float(old) / ( float( n_prime) * math.ln(float( n_prime ) ) )
   return i
 
 let args = docopt( doc, version = "0.0.0.0.1" )
