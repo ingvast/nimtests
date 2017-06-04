@@ -24,37 +24,39 @@ proc `$`( t : seq[ bool ] ) : string =
 
 proc calculatePrimeN( ct_prime : int ) : int =
 
-  var numbers  =  newSeq[ bool ]( int( ln(float(ct_prime)) * ct_prime.float * 1.2 ) )
+  var numbers  =  newSeq[ bool ]( int( ln(float(ct_prime)) * ct_prime.float * 1.2 / 2 ) )
+  echo "Reserved ", numbers.len div (1024 * 1024) , " MiB"
+  # index value
+  # 0     1
+  # 1     3
+  # 2     5
+  # 3     7
   
   proc unsetPrimes( n : int) =
-    #if n mod 2 == 0:
-      #raise newException( IndexError, "Called unset primes with even number")
-    for i in countup( n*n, numbers.len - 1, n * 2 ):
+    for i in countup( n*n div 2, numbers.len - 1, n ):
       numbers[i] = false
 
   proc findNextPrime( n: int ): int =
-    var n = n
+    var n : int = n div 2
     while n < numbers.len:
       if numbers[n]:
-        return n
+        return n * 2 + 1
       n = n + 1
     return 0
 
-  for i in countup(0,numbers.len - 2, 2):
-    numbers[i] = false
-    numbers[i+1] = true
+  for i in 0..<numbers.len:
+    numbers[i] = true
 
   var
     i : int = 1
-    old : int
     n_prime : int = 3
 
   while n_prime <= ct_prime:
-    old  = i
-    i = findNextPrime( i + 1 )
-    #echo n_prime, " ", i
+    i = findNextPrime( i + 2 )
+    #echo n_prime, " ", i 
     n_prime = n_prime + 1
     unsetPrimes(i)
+    #echo numbers
   return i
 
 let args = docopt( doc, version = "0.0.0.0.1" )
