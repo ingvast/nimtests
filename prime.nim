@@ -32,15 +32,17 @@ proc calculatePrimeN( ct_prime : int ) : int =
   # 2     5
   # 3     7
   
-  proc unsetPrimes( n : int) =
-    for i in countup( n*n div 2, numbers.len - 1, n ):
+  #(2*n+1)*(2*n+1) div 2  = 2*n(n + 1)
+  # value  N*N + 2 * N = N*N + 2* ( 2n+1) = N*N + 4*n + 2
+  proc unsetPrimes( n : int)  {. inline .} =
+    for i in countup( 2*n*(n+1), numbers.len - 1, 2*n + 1):
       numbers[i] = false
 
-  proc findNextPrime( n: int ): int =
-    var n : int = n div 2
+  proc findNextPrime( n: int ): int  {. inline .} =
+    var n : int = n
     while n < numbers.len:
       if numbers[n]:
-        return n * 2 + 1
+        return n
       n = n + 1
     return 0
 
@@ -48,16 +50,16 @@ proc calculatePrimeN( ct_prime : int ) : int =
     numbers[i] = true
 
   var
-    i : int = 1
+    i : int = 0
     n_prime : int = 3
 
   while n_prime <= ct_prime:
-    i = findNextPrime( i + 2 )
-    #echo n_prime, " ", i 
+    i = findNextPrime( i + 1 )
+    #echo n_prime, " ", i * 2 + 1
     n_prime = n_prime + 1
     unsetPrimes(i)
     #echo numbers
-  return i
+  return i*2+1
 
 let args = docopt( doc, version = "0.0.0.0.1" )
 
