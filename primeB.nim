@@ -78,7 +78,7 @@ let args = docopt( doc, version = "0.0.0.0.1" )
 
 let primeN = parseInt( $args["<primeN>"] )
 
-let  (nextPrime, bitField, defPrimes) = calculatePrimeN( primeN )
+var  (nextPrime, bitField, defPrimes) = calculatePrimeN( primeN )
 echo  defPrimes
 echo nextPrime
 echo  collectTrue( bitField )
@@ -86,6 +86,32 @@ echo  bitField
 
 var defBits = bitField[0..<defPrimes.mul() ]
 echo defBits
+
+
+var
+  bits = defBits
+  extraPrimes : seq[ int ]  = @[]
+
+while nextPrime != 0:
+
+  extraPrimes.add nextPrime
+  echo nextPrime
+
+  for i in countup( nextPrime*nextPrime, bits.high, 2 * nextPrime ):
+    bits[i] = false
+  
+  nextPrime = nextPrime + 2
+
+  while true:
+    if nextPrime > bits.high:
+      nextPrime = 0
+      break
+    if bits[ nextPrime ]:
+      break
+    nextPrime = nextPrime + 2
+
+echo extraPrimes
+
 
 #[[
   What to do:
