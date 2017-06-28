@@ -76,7 +76,8 @@ proc calculatePrimeN( size : int ) : tuple[ nextPrime: int,  bitField: primeSet,
 
 let args = docopt( doc, version = "0.0.0.0.1" )
 
-let primeN = parseInt( $args["<primeN>"] )
+let primeN = parseInt( $args["<primeN>"] ) 
+echo "primeN = ", $args["<primeN>"], " = ", primeN
 
 var  (nextPrime, bitField, defPrimes) = calculatePrimeN( primeN )
 echo  defPrimes
@@ -84,18 +85,20 @@ echo nextPrime
 echo  collectTrue( bitField )
 echo  bitField
 
-var defBits = bitField[0..<defPrimes.mul() ]
+let size = defPrimes.mul
+
+var defBits = bitField[0..<size ]
 echo defBits
 
 
 var
   bits = defBits
   extraPrimes : seq[ int ]  = @[]
+  offset = 0
 
 while nextPrime != 0:
 
   extraPrimes.add nextPrime
-  echo nextPrime
 
   for i in countup( nextPrime*nextPrime, bits.high, 2 * nextPrime ):
     bits[i] = false
