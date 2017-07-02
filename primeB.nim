@@ -3,12 +3,14 @@ let doc = """
 Calculate all the prime numbers smaller than largest_num.
 
 Usage:
-  prime <primeN>
+  prime [ --size=<n> ] [ --largestPrime=<n> ]
   prime (-h | --help) 
 
 Options:
-  -h --help     Show this help
-  -v --version  Show version
+  --size=<n>        The size of each chunk [default: 20]
+  --largestPrime=<n>   How large primes to find [default: 40]
+  -h --help            Show this help
+  -v --version         Show version
 """
   
 import strutils
@@ -29,10 +31,10 @@ proc mul[T]( vect : seq[ T ] ) : T =
   for x in  vect:
     result = result * x
 
-proc collectTrue( all : primeSet ) : seq[ int ] =
+proc collectTrue( all : primeSet, offset = 0 ) : seq[ int ] =
   result = @[]
   for i, v in all :
-    if v : result.add i
+    if v : result.add i + offset
 
 proc calculatePrimeN( size : int ) : tuple[ nextPrime: int,  bitField: primeSet, primeList : seq[ int ] ] =
 
@@ -76,8 +78,10 @@ proc calculatePrimeN( size : int ) : tuple[ nextPrime: int,  bitField: primeSet,
 
 let args = docopt( doc, version = "0.0.0.0.1" )
 
-let primeN = parseInt( $args["<primeN>"] ) 
-echo "primeN = ", $args["<primeN>"], " = ", primeN
+echo args
+
+let primeN =parseInt( $args["--size"] ) 
+let largestPrime = parseInt( $args["--largestPrime"] ) 
 
 var  (nextPrime, bitField, defPrimes) = calculatePrimeN( primeN )
 echo  defPrimes
@@ -88,8 +92,12 @@ echo  bitField
 let size = defPrimes.mul
 
 var defBits = bitField[0..<size ]
-echo defBits
 
+defBits[1] = true
+for i in defPrimes:
+  defBits[i] = false
+
+echo "defBits = ", defBits
 
 var
   bits = defBits
@@ -100,13 +108,13 @@ while nextPrime != 0:
 
   extraPrimes.add nextPrime
 
-  for i in countup( nextPrime*nextPrime, bits.high, 2 * nextPrime ):
+  for i in countup( nextPrime*nextPrime, size, 2 * nextPrime ):
     bits[i] = false
-  
+
   nextPrime = nextPrime + 2
 
   while true:
-    if nextPrime > bits.high:
+    if nextPrime > size:
       nextPrime = 0
       break
     if bits[ nextPrime ]:
@@ -116,13 +124,19 @@ while nextPrime != 0:
 echo extraPrimes
 
 
-#[[
-  What to do:
-  1. Hitta antalet primtal som ska anv'ndas i batchen
-  2. Skapa batchen
-  3. kopiera första batchen
+offset = offset + size
+while offset <  largestPrime:
+  bits = defBits
+  echo bits
+  echo "Offset = ", offset, ",  ", extraPrimes
+  for e in extraPrimes:
+    for i in countup( e*e, offset + size, 2 * e ):
+      bits[i mod size] = false
+  extraPrimes.add collectTrue( bits, offset )
+
+  echo collectTrue( bits,offset )
+  offset.inc size
   
-  Fyll på med primtalen vi har från prim**2 
-  Plocka ur alla primtal vi kan fin
-]]#
+echo extraPrimes
+
 
