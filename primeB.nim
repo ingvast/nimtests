@@ -121,20 +121,22 @@ while nextPrime != 0:
       break
     nextPrime = nextPrime + 2
 
-echo extraPrimes
 
 
 offset = offset + size
 while offset <  largestPrime:
   bits = defBits
-  echo bits
-  echo "Offset = ", offset, ",  ", extraPrimes
+  #echo bits
+  #echo "Offset = ", offset, ",  ", extraPrimes
   for e in extraPrimes:
     for i in countup( e*e, offset + size, 2 * e ):
-      bits[i mod size] = false
+      if i >= offset:
+        #if bits[ i mod size ]:
+          #echo("Unsetting ", i )
+        bits[i mod size] = false
   extraPrimes.add collectTrue( bits, offset )
 
-  echo collectTrue( bits,offset )
+  #echo collectTrue( bits,offset )
   offset.inc size
   
 echo extraPrimes
