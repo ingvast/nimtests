@@ -17,8 +17,17 @@ import strutils
 import docopt
 import typetraits
 import math
+import times
 #import nimprof
-#
+
+type Ptime = float 
+proc preset( ptime : var Ptime ): float =
+  let currTime = cpuTime()
+  result = currTime - ptime
+  ptime = currTime
+proc pdiff( ptime : Ptime) : float =
+  return cpuTime() - ptime
+
 type Prime = int
 
 type
@@ -208,9 +217,17 @@ var e2 : int
 offset.inc size
 var nextOffset = offset + size
 
+var
+  ct_loop = 0
+  ct_inner : int
+
+var pTime  : Ptime
+discard pTime.preset()
 
 while offset <  largestPrime:
   bits = defBits
+
+  ct_inner = 0
 
   for e in extraPrimes:
 
@@ -218,6 +235,7 @@ while offset <  largestPrime:
     if e2 >= nextOffset: break
 
     for i in countup( e2, nextOffset, 2 * e ):
+      ct_inner.inc
       if i >= offset:
         bits[ i - offset ] = false
 
@@ -228,6 +246,8 @@ while offset <  largestPrime:
   offset = nextOffset
   nextOffset.inc size
   #echo nextOffset
+  ct_loop.inc
+  echo ct_loop, " ", ct_inner, ' ', extraPrimes.len, " Time taken: ", ptime.preset()
   
 #echo toLinStr( defPrimes )
 #echo toLinStr( extraPrimes )
