@@ -220,11 +220,13 @@ var nextOffset = offset + size
 var
   ct_loop = 0
   ct_inner : int
+  ct_inner_sum  = 0
 
 var pTime  : Ptime
 discard pTime.preset()
 
 while offset <  largestPrime:
+  #echo "Offset: ", offset
   bits = defBits
 
   ct_inner = 0
@@ -232,12 +234,19 @@ while offset <  largestPrime:
   for e in extraPrimes:
 
     e2 = e * e
-    if e2 >= nextOffset: break
 
-    for i in countup( e2, nextOffset, 2 * e ):
-      ct_inner.inc
-      if i >= offset:
-        bits[ i - offset ] = false
+    #echo  "Clearing prime ", e
+    if e2 >= offset:
+      for i in countup( e2 - offset, size-1, 2 * e ):
+        ct_inner.inc
+        bits[ i ] = false
+    else:
+      if e2 >= nextOffset: break
+      for i in countup( e - ( offset mod e)  , size-1, e) :
+        #echo i + offset
+        ct_inner.inc
+        bits[ i ] = false
+        
 
   extraPrimes.add collectTrue( bits, offset )
   #echo collectTrue( bits, offset)
@@ -246,11 +255,12 @@ while offset <  largestPrime:
   offset = nextOffset
   nextOffset.inc size
   #echo nextOffset
-  ct_loop.inc
   echo ct_loop, " ", ct_inner, ' ', extraPrimes.len, " Time taken: ", ptime.preset()
+  ct_inner_sum.inc ct_inner
   
 #echo toLinStr( defPrimes )
 #echo toLinStr( extraPrimes )
 echo extraPrimes.last
 echo extraPrimes.len
 echo "Max diff: ", max(diff( extraPrimes.list ) )
+echo "#loops: ", ct_inner_sum
